@@ -24,7 +24,7 @@ const Button = ({
         >
             {icon}
             <p
-                className={`text-[12px] sm:text-[14px] lg:text-[18px] ${
+                className={`text-[12px] text-center w-full sm:text-[14px] lg:text-[18px] ${
                     isInverted ? 'text-[#00B0FF]' : 'text-white'
                 }`}
             >
