@@ -13,7 +13,6 @@ interface Product {
 }
 
 const Cart = ({ product }: { product: Product }) => {
-    // const [isSelected, setIsSelected] = useState(false);
     const [count, setCount] = useState(1);
     const [showPopup, setShowPopup] = useState(false);
 
@@ -46,10 +45,10 @@ const Cart = ({ product }: { product: Product }) => {
                         Под заказ
                     </p>
                 </div>
-                <div className="flex flex-row h-[45px] sm:h-[50px] lg:h-[60px] items-center justify-between w-full px-[12px] sm:px-[15px] lg:px-[20px] py-[6px] sm:py-[8px] lg:py-[10px] mb-[8px] sm:mb-[10px] border border-[#DFDFDF] rounded-[8px] sm:rounded-[10px]">
+                <div className="flex flex-row h-[45px] sm:h-[50px] lg:h-[60px] items-center justify-between w-full px-[8px] py-[6px] sm:py-[8px] lg:py-[10px] mb-[8px] sm:mb-[10px] border border-[#DFDFDF] rounded-[8px] sm:rounded-[10px]">
                     <button
                         onClick={() => count > 0 && setCount(count - 1)}
-                        className="px-[12px] sm:px-[15px] lg:px-[18px] h-full bg-[#F5F7FB] rounded-[4px] sm:rounded-[6px] text-[12px] sm:text-[14px] lg:text-[16px] min-w-[35px] sm:min-w-[40px]"
+                        className="px-[6px] h-full bg-[#F5F7FB] rounded-[4px] sm:rounded-[6px] text-[12px] sm:text-[14px] lg:text-[16px] min-w-[35px] sm:min-w-[40px]"
                     >
                         -
                     </button>
@@ -63,7 +62,7 @@ const Cart = ({ product }: { product: Product }) => {
                     </div>
                     <button
                         onClick={() => setCount(count + 1)}
-                        className="px-[12px] sm:px-[15px] lg:px-[18px] h-full bg-[#F5F7FB] rounded-[4px] sm:rounded-[6px] text-[12px] sm:text-[14px] lg:text-[16px] min-w-[35px] sm:min-w-[40px]"
+                        className="h-full bg-[#F5F7FB] rounded-[4px] sm:rounded-[6px] text-[12px] sm:text-[14px] lg:text-[16px] min-w-[35px] sm:min-w-[40px]"
                     >
                         +
                     </button>
@@ -87,7 +86,18 @@ const Cart = ({ product }: { product: Product }) => {
                                 error
                             );
                         }
-                        cart.push({ ...product, count });
+
+                        const existingIndex = cart.findIndex(
+                            (item: Product) =>
+                                item.artNumber === product.artNumber
+                        );
+
+                        if (existingIndex !== -1) {
+                            cart[existingIndex].count += count;
+                        } else {
+                            cart.push({ ...product, count });
+                        }
+
                         localStorage.setItem('cart', JSON.stringify(cart));
 
                         handleAddToCart();

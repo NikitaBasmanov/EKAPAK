@@ -1,14 +1,17 @@
-// import { useState } from 'react';
 import testProduct from '../assets/testProduct.png';
 import Cart from '../components/Cart';
+import { useCategories } from '../utils/api';
+import { useState } from 'react';
 
-const catalog = [
-    { name: 'Вакуумные пакеты', items: [] },
-    { name: 'Пакеты с клапаном', items: [] },
-    { name: 'Пакеты с вырубной ручкой', items: [] },
-    { name: 'Пакеты с клеевым слоем', items: [] },
-    { name: 'Пакеты с еврослотом', items: [] },
-];
+interface CategoryWithChildren extends Category {
+    children: Category[];
+}
+
+interface Category {
+    uuid: string;
+    name: string;
+    img_url: string;
+}
 
 const products = [
     {
@@ -64,7 +67,10 @@ const products = [
 ];
 
 function App() {
-    // const [count, setCount] = useState(0);
+    const { data: categories, isSuccess: isCategoriesSuccess } =
+        useCategories();
+
+    const [openSubcategory, setOpenSubcategory] = useState<string | null>(null);
 
     return (
         <>
@@ -83,19 +89,52 @@ function App() {
                         Каталог товаров
                     </h2>
                     <div className="flex flex-col w-full items-center justify-between gap-[15px] sm:gap-[20px]">
-                        {catalog.map((item, index) => (
-                            <div
-                                key={index}
-                                className="flex items-center justify-between w-full hover:text-[#00B0FF] cursor-pointer"
-                            >
-                                <p className="text-[14px] sm:text-[16px] lg:text-[18px]">
-                                    {item.name}
-                                </p>
-                                <p className="text-[14px] sm:text-[16px] lg:text-[18px]">
-                                    {'>'}
-                                </p>
-                            </div>
-                        ))}
+                        {isCategoriesSuccess &&
+                            categories.data?.map(
+                                (category: CategoryWithChildren) => (
+                                    <div
+                                        key={category.uuid}
+                                        className="flex items-center justify-between w-full hover:text-[#00B0FF] cursor-pointer relative"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setOpenSubcategory(
+                                                openSubcategory ===
+                                                    category.uuid
+                                                    ? null
+                                                    : category.uuid
+                                            );
+                                        }}
+                                    >
+                                        <p className="text-[14px] sm:text-[16px] lg:text-[18px]">
+                                            {category.name}
+                                        </p>
+                                        <p className="text-[14px] sm:text-[16px] lg:text-[18px]">
+                                            {'>'}
+                                        </p>
+                                        {openSubcategory === category.uuid && (
+                                            <div
+                                                className="absolute left-full top-0 z-10 ml-2 flex flex-col items-start justify-center min-w-[200px] bg-white rounded-[10px] sm:rounded-[20px] p-[10px] sm:p-[15px] lg:p-[20px] shadow-lg border border-[#DFDFDF]"
+                                                onClick={(e) =>
+                                                    e.stopPropagation()
+                                                }
+                                            >
+                                                {category.children?.map(
+                                                    (subcategory: Category) => (
+                                                        <p
+                                                            key={
+                                                                subcategory.uuid
+                                                            }
+                                                            className="py-1 px-2 hover:bg-[#F5F7FB] rounded cursor-pointer"
+                                                        >
+                                                            {subcategory.name}
+                                                        </p>
+                                                    )
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                )
+                            )}
                     </div>
                 </div>
                 <div className="p-[10px] sm:p-[15px] lg:p-[20px] xl:p-[30px] w-full bg-white rounded-[10px] sm:rounded-[20px] flex flex-col items-start justify-center gap-[10px] sm:gap-[15px] lg:gap-[20px]">
